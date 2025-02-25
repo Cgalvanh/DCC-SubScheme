@@ -1,0 +1,738 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="3.3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:dcc="https://ptb.de/dcc"
+           xmlns:si="https://ptb.de/si"
+           xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+           targetNamespace="https://ptb.de/dcc"
+           elementFormDefault="qualified">
+
+    <xs:import
+            namespace="https://ptb.de/si"
+            schemaLocation="C:\Users\jolopez\Consejo Nacional de Ciencia y Tecnologia-68760199-CENAM\Excel2XML - General\PTB Siegfried\SI_Format_simplified.xsd"/>
+
+    <xs:import
+        namespace="http://www.w3.org/2000/09/xmldsig#"
+        schemaLocation="https://www.ptb.de/dcc/d-sig/xmldsig-core-schema.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation>
+            DCC - Digital Calibration Certificate
+            Copyright (c) 2019 - 2024 Physikalisch-Technische Bundesanstalt
+            
+            This XML Schema Definition (XSD) is free software: you can redistribute it and/or modify
+            it under the terms of the GNU Lesser General Public License as published by
+            the Free Software Foundation, version 3 of the License.
+            
+            This XSD is distributed in the hope that it will be useful,
+            but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+            See the GNU Lesser General Public License for more details.
+            
+            The development of minimum requirements for a digital calibration certificate (DCC) is partially funded and
+            supported by the joint research project EMPIR 17IND02 (title: SmartCom).
+            This project (17IND02) has received funding from the EMPIR programme, co-financed by the participating states
+            and the European Union’s Horizon 2020 research and innovation programme.
+            The further development of the digital calibration certificate (DCC) is partly supported by the lighthouse
+            project GEMIMEG-II (GEMIMEG 01MT20001E), funded by the German Federal Ministry for Economic Affairs and
+            Climate Action (BMWK), and the project “International Standard Accident Number” (ISAN), funded by the Niedersächsisches
+            Vorab initiative of the Volkswagen Foundation (VolkswagenStiftung).
+            
+            Documentation: https://ptb.de/dcc/v3.3.0/
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="digitalCalibrationCertificate" type="dcc:digitalCalibrationCertificateType"/>
+
+    <xs:complexType name="digitalCalibrationCertificateType">
+        <xs:annotation>
+            <xs:documentation>
+                The root element of the DCC contains the four rings of the DCC and an optional signature.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            
+            <xs:element name="measurementResults" type="dcc:measurementResultListType"/>
+
+        </xs:sequence>
+
+        <xs:attribute name="schemaVersion" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="3\.3\.0"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+    
+    <xs:complexType name="softwareListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of software, e.g., software used to create the DCC, software used during the calibration process, or software used in measuring equipment.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="software" type="dcc:softwareType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="softwareType">
+        <xs:annotation>
+            <xs:documentation>
+                Information about the software, including its name, version, type, and description.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="release" type="dcc:notEmptyStringType"/>
+            <!--<xs:element name="type" minOccurs="0">
+               <xs:simpleType>
+                   <xs:restriction base="xs:string">
+                       <xs:enumeration value="application" />
+                       <xs:enumeration value="bios" />
+                       <xs:enumeration value="driver" />
+                       <xs:enumeration value="editor" />
+                       <xs:enumeration value="firmware" />
+                       <xs:enumeration value="library" />
+                       <xs:enumeration value="os" />
+                       <xs:enumeration value="other" />
+                   </xs:restriction>
+               </xs:simpleType>
+           </xs:element>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="measuringEquipmentListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of measuring equipment and instruments used during the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+                <xs:element name="equipmentClass" type="dcc:equipmentClassType" minOccurs="0"  /> <!--maxOccurs="unbounded"-->
+                <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+            <!--<xs:element name="owner" type="dcc:contactType" minOccurs="0"/>-->
+                <xs:element name="identifications" type="dcc:identificationListType" minOccurs="0"/>
+               <xs:element name="measuringEquipment" type="dcc:measuringEquipmentType" maxOccurs="unbounded"/>
+                <xs:element name="measuringEquipmentOnce" type="dcc:measuringEquipmentType"/>
+<!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->
+            <!--<xs:element name="measuringEquipmentONE" type="dcc:measuringEquipmentType"/>
+                <xs:element name="measuringEquipmentTWO" type="dcc:measuringEquipmentType"/>
+                <xs:element name="measuringEquipmentTHREE" type="dcc:measuringEquipmentType"/>
+                <xs:element name="measuringEquipmentFOUR" type="dcc:measuringEquipmentType"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="measuringEquipmentType">
+        <xs:annotation>
+            <xs:documentation>
+                Information about a measuring equipment or instrument used during the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="equipmentClass" type="dcc:equipmentClassType" minOccurs="0" maxOccurs="unbounded"/> <!--" Revisar Quitar Unbounded-->
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+            <xs:element name="certificate" type="dcc:hashType" minOccurs="0"/>
+            <xs:element name="manufacturer" type="dcc:contactNotStrictType" minOccurs="0"/>
+            <xs:element name="model" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="identifications" type="dcc:identificationListType" minOccurs="0"/>
+            <xs:element name="measuringEquipmentQuantities" type="dcc:measuringEquipmentQuantityListType" minOccurs="0"/>
+        <!--<xs:element name="installedSoftware" type="dcc:softwareListType" minOccurs="0" />-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="measuringEquipmentQuantityListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of numerical values that belong to the measuring equipment and are relevant for the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="measuringEquipmentQuantity" type="dcc:primitiveQuantityType" maxOccurs="unbounded"/>
+            <xs:element name="measuringEquipmentQuantityOnce" type="dcc:primitiveQuantityType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="primitiveQuantityType">
+        <xs:annotation>
+            <xs:documentation>
+                Numerical value that belongs to item quantities, measuring equipment quantities, or used method quantities and is relevant for the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+<!--  #############################                                                                                      Select or use only one element when mapping                                                                 ###############################################  -->            
+            <!--<xs:choice>-->
+                <xs:element ref="si:real"/>
+                <xs:element ref="si:hybrid"/>
+            <!--</xs:choice>-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+            
+    <xs:simpleType name="notEmptyStringType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[^\s]+(\s+[^\s]+)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="equipmentClassType">
+        <xs:annotation>
+            <xs:documentation>
+                Necessary information to uniquely identify (a system of) calibration items or measuring equipment using a defined classification scheme or standard.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="reference" type="dcc:notEmptyStringType"/>
+            <xs:element name="classID" type="dcc:notEmptyStringType"/>
+            <xs:element name="link" type="xs:anyURI" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="identificationListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of additional identifications (e.g., order number, reference number, serial number, etc.) for an item, measuring equipment, or a DCC.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="identification" type="dcc:identificationType" maxOccurs="unbounded"/>
+            <!--<xs:element name="identificationOnce" type="dcc:identificationType"/>-->
+<!--            <xs:element name="identificationSerie" type="dcc:identificationType"/>
+            <xs:element name="identificationCustumer" type="dcc:identificationType"/>-->
+  <!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->
+              <!--<xs:element name="identificationCalibrationLab" type="dcc:identificationType"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="identificationType">
+        <xs:annotation>
+            <xs:documentation>
+                Additional identification (e.g., order number, reference number, serial number, etc.) for an item, measuring equipment, or a DCC.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="issuer">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="manufacturer"/>
+                        <xs:enumeration value="calibrationLaboratory"/>
+                        <xs:enumeration value="customer"/>
+                        <xs:enumeration value="owner"/>
+                        <xs:enumeration value="other"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="value" type="dcc:notEmptyStringType"/>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="measurementResultListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of measurement results and metadata common to all measurement results.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+<!--            <xs:element name="usedMethods" type="dcc:usedMethodListType" minOccurs="0"/>
+            <xs:element name="usedSoftware" type="dcc:softwareListType" minOccurs="0"/>
+            <xs:element name="measuringEquipments" type="dcc:measuringEquipmentListType" minOccurs="0"/>
+            <xs:element name="influenceConditions" type="dcc:influenceConditionListType" minOccurs="0"/>
+            <xs:element name="measurementMetaData" type="dcc:measurementMetaDataListType" minOccurs="0"/>-->
+            <xs:element name="measurementResult" type="dcc:measurementResultType"/> <!--maxOccurs="unbounded"-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="measurementResultType">
+        <xs:annotation>
+            <xs:documentation>
+                Container for used methods, used software, influence conditions, measuring equipment used for the calibration, metadata and calibration results.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="usedMethods" type="dcc:usedMethodListType" minOccurs="0" />
+           <xs:element name="usedSoftware" type="dcc:softwareListType" minOccurs="0"/>
+            <xs:element name="measuringEquipments" type="dcc:measuringEquipmentListType" minOccurs="0"/>
+            <xs:element name="influenceConditions" type="dcc:influenceConditionListType" minOccurs="0" />
+            <xs:element name="results" type="dcc:resultListType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="usedMethodListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of methods used in the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+      <!--<xs:element name="usedMethod" type="dcc:usedMethodType" maxOccurs="unbounded"/>-->
+            <xs:element name="usedMethod" type="dcc:usedMethodType"/>
+            <xs:element name="usedMethodDevelop" type="dcc:usedMethodType"/>
+            <xs:element name="usedMethodGUM" type="dcc:usedMethodType"/>
+<!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->
+ <!--    <xs:element name="usedMethodOTHER" type="dcc:usedMethodType"/>
+            <xs:element name="usedMethodANOTHER" type="dcc:usedMethodType"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="usedMethodType">
+        <xs:annotation>
+            <xs:documentation>
+                Method used in the calibration process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+            <xs:element name="norm" type="dcc:notEmptyStringType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="normOnce" type="dcc:notEmptyStringType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="influenceConditionListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of measurement conditions (e.g., environmental) influencing the calibration result.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+       <!--     <xs:element name="influenceCondition" type="dcc:conditionType" maxOccurs="unbounded"/>-->
+            <xs:element name="influenceCondition" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionOnce" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionOther" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionAnother" type="dcc:conditionType"/>
+<!--    <xs:element name="influenceConditionMassDensity" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionTemperature" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionAirDensity" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionRelativeHumidity" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionMass_airPressure" type="dcc:conditionType"/>
+            <xs:element name="influenceConditionMassVolume" type="dcc:conditionType"/>
+        -->
+  <!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->          
+            <!--<xs:element name="influenceConditionONE" type="dcc:conditionType"/>-->
+            <!--<xs:element name="influenceConditionTWO" type="dcc:conditionType"/>-->
+            <!--<xs:element name="influenceConditionTHREE" type="dcc:conditionType"/>-->
+            <!--<xs:element name="influenceConditionFOUR" type="dcc:conditionType"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="conditionType">
+        <xs:annotation>
+            <xs:documentation>
+                Measurement  condition (e.g., environmental) influencing the calibration result.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="certificate" type="dcc:hashType" minOccurs="0"/>
+            <xs:element name="data" type="dcc:dataType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="resultListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of actual calibration results.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+      <!--<xs:element name="result" type="dcc:resultType" maxOccurs="unbounded"/>-->
+            <xs:element name="result" type="dcc:resultType"/>
+            <xs:element name="resultOnce" type="dcc:resultType"/>
+<!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->          
+              <!--
+              <xs:element name="resultSectionOne" type="dcc:resultType"/>
+              <xs:element name="resultSectionTWO" type="dcc:resultType"/>
+              <xs:element name="resultSectionTHREE" type="dcc:resultType"/>
+              -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resultType">
+        <xs:annotation>
+            <xs:documentation>
+                Actual calibration result.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+ <!--           <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>-->
+            <xs:element name="data" type="dcc:dataType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="dataType">
+        <xs:annotation>
+            <xs:documentation>
+                Container for various data, e.g., text, formulas, and quantities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+<!--  #############################                                                                                       Select or use only one element when mapping                                                                ###############################################  -->        
+  <!--<xs:choice maxOccurs="unbounded">-->
+            <xs:element name="formula" type="dcc:formulaType" maxOccurs="unbounded"/>
+            <xs:element name="formulaOnce" type="dcc:formulaType"/>
+            <xs:element name="quantity" type="dcc:quantityType"  maxOccurs="unbounded"/><!-- Revisar si quitar-unbounded-->
+            <xs:element name="quantityOnce" type="dcc:quantityType"/>
+            <xs:element name="quantityOther" type="dcc:quantityType"/>
+            <xs:element name="quantityAnother" type="dcc:quantityType"/> <!-- Revisar si quitar-->
+        <!--</xs:choice>-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="quantityType">
+        <xs:annotation>
+            <xs:documentation>
+                Single measurement quantity containing a name, description, a D-SI element (numerical value), and text.
+                Additionally, e.g., used methods, used software, influence conditions, and metadata that are related to this quantity can be added.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+<!--  #############################                                                                                       Select or use only one element when mapping                                                                ###############################################  -->                              
+            <!--<xs:choice>-->
+                <xs:element ref="si:real"/>
+                <xs:element ref="si:hybrid"/>
+<!--        <xs:element ref="si:list"/>-->
+            <!--</xs:choice>-->
+            <xs:element name="measurementMetaData" type="dcc:measurementMetaDataListType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+    
+  <xs:complexType name="listType">
+        <xs:annotation>
+            <xs:documentation>
+                List for (primarily) structuring (lists of) quantities and related data, e.g., influence conditions, used methods, etc.
+                A recursive usage of the list allows the creation of matrix and tensor structures, as well as structures of higher dimensions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+<!--            <xs:choice>
+                <xs:element name="dateTime" type="xs:dateTime" minOccurs="0"/>
+                <xs:element name="dateTimeXMLList" type="dcc:dateTimeXMLListType" minOccurs="0"/>
+            </xs:choice>
+            <xs:choice maxOccurs="unbounded">-->
+                <xs:element name="quantity" type="dcc:quantityType"  maxOccurs="unbounded"/><!-- Revisar si quitar-unbounded-->               
+                <xs:element name="quantityOnce" type="dcc:quantityType"/>
+               <xs:element name="quantityOther" type="dcc:quantityType"/>
+               <xs:element name="quantityAnother" type="dcc:quantityType"/> <!-- Revisar si quitar-->
+<!--            </xs:choice>-->
+<!--            <xs:element name="usedMethods" type="dcc:usedMethodListType" minOccurs="0"/>
+            <xs:element name="usedSoftware" type="dcc:softwareListType" minOccurs="0"/>
+            <xs:element name="measuringEquipments" type="dcc:measuringEquipmentListType" minOccurs="0"/>
+            <xs:element name="influenceConditions" type="dcc:influenceConditionListType" minOccurs="0"/>
+            <xs:element name="measurementMetaData" type="dcc:measurementMetaDataListType" minOccurs="0"/>-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>    
+    
+    <xs:complexType name="measurementMetaDataListType">
+        <xs:annotation>
+            <xs:documentation>
+                List of additional information (metadata) related to a measurement result or (lists of) quantities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+<!--            <xs:element name="metaData" type="dcc:statementMetaDataType" maxOccurs="unbounded"/>-->
+            <xs:element name="metaData" type="dcc:statementMetaDataType"/>
+<!--            <xs:element name="metaDataOnce" type="dcc:statementMetaDataType"/>-->
+           
+ 
+  <!--  #############################                                                                                        Add more if it is necessary                                                                 ###############################################  -->
+   <!--         <xs:element name="metaDataOther" type="dcc:statementMetaDataType"/>-->
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="statementMetaDataType">
+        <xs:annotation>
+            <xs:documentation>
+                a) Additional information (metadata) related to a measurement result or (lists of) quantities, or
+                b) statement information regarding the DCC or calibration process, e.g., the statement of conformity.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+<!--      <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>-->
+            <xs:element name="convention" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="norm" type="dcc:notEmptyStringType" minOccurs="0"/> <!--maxOccurs="unbounded"/>-->
+<!--    <xs:element name="reference" type="dcc:notEmptyStringType" minOccurs="0" maxOccurs="unbounded"/>-->
+            <xs:element name="declaration" type="dcc:richContentType" minOccurs="0"/>
+<!--            <xs:choice minOccurs="0">-->
+            <xs:sequence minOccurs="0">
+                <xs:element name="valid" type="xs:boolean"/>
+                <xs:element name="validXMLList" type="dcc:booleanXMLListType"/>
+            </xs:sequence>
+ <!--           </xs:choice>-->
+            <xs:element name="respAuthority" type="dcc:contactType" minOccurs="0"/>
+            <xs:sequence minOccurs="0">
+            <!--<xs:choice minOccurs="0">-->
+                <xs:element name="conformity" type="dcc:stringConformityStatementStatusType"/>
+<!--        <xs:element name="conformityXMLList" type="dcc:stringConformityStatementStatusXMLListType"/>-->
+            <!--</xs:choice>-->
+            </xs:sequence>
+            <xs:element name="data" type="dcc:dataType" minOccurs="0"/>
+<!--            <xs:element name="location" type="dcc:locationType" minOccurs="0"/>-->
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:simpleType name="booleanXMLListType">
+        <xs:list itemType="xs:boolean"/>
+    </xs:simpleType>
+<!--
+    <xs:simpleType name="stringConformityStatementStatusXMLListType">
+        <xs:list itemType="dcc:stringConformityStatementStatusType"/>
+    </xs:simpleType>
+-->
+    <xs:simpleType name="stringConformityStatementStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="pass"/>
+            <xs:enumeration value="fail"/>
+            <xs:enumeration value="conditionalPass"/>
+            <xs:enumeration value="conditionalFail"/>
+            <xs:enumeration value="noPass"/>
+            <xs:enumeration value="noFail"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="stringISO3166Type">
+        <xs:annotation>
+            <xs:documentation>
+                Country code as defined in ISO 3166-1, restricted to two uppercase letters.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="stringISO639Type">
+        <xs:annotation>
+            <xs:documentation>
+                Language code as defined in ISO 639, restricted to two lowercase letters.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-z]{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="stringWithLangType">
+        <xs:annotation>
+            <xs:documentation>
+                String element with an additional language attribute.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="lang" type="dcc:stringISO639Type" use="optional"/>
+                <xs:attribute name="id" type="xs:ID" use="optional"/>
+                <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+                <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="locationType">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="city" type="dcc:notEmptyStringType"/>
+            <xs:element name="countryCode" type="dcc:stringISO3166Type"/>
+            <xs:element name="postCode" type="dcc:notEmptyStringType"/>
+            <xs:element name="postOfficeBox" type="dcc:notEmptyStringType"/>
+            <xs:element name="state" type="dcc:notEmptyStringType"/>
+            <xs:element name="street" type="dcc:notEmptyStringType"/>
+            <xs:element name="streetNo" type="dcc:notEmptyStringType"/>
+            <xs:element name="further" type="dcc:richContentType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="contactType">
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="eMail" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="phone" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="fax" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="link" type="xs:anyURI" minOccurs="0"/>
+            <xs:element name="location" type="dcc:locationType"/>
+            <xs:element name="descriptionData" type="dcc:byteDataType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="contactNotStrictType">
+        <xs:annotation>
+            <xs:documentation>
+                Same as contact type but with an optional location.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType"/>
+            <xs:element name="eMail" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="phone" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="fax" type="dcc:notEmptyStringType" minOccurs="0"/>
+            <xs:element name="link" type="xs:anyURI" minOccurs="0"/>
+            <xs:element name="location" type="dcc:locationType" minOccurs="0"/>
+            <xs:element name="descriptionData" type="dcc:byteDataType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="hashType">
+        <xs:sequence>
+            <xs:element name="referral" type="dcc:textType"/>
+            <xs:element name="referralID" type="dcc:notEmptyStringType"/>
+            <xs:element name="procedure" type="dcc:notEmptyStringType"/>
+            <xs:element name="value" type="dcc:notEmptyStringType"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+            <xs:element name="inValidityRange" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="traceable" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="linkedReport" type="dcc:hashType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="textType">
+        <xs:annotation>
+            <xs:documentation>
+                Arbitrary text (string) that can be provided in different languages (identified by optional language attributes).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="content" type="dcc:stringWithLangType" maxOccurs="unbounded"/>
+            <xs:element name="contentOnce" type="dcc:stringWithLangType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="richContentType">
+        <xs:annotation>
+            <xs:documentation>
+                Container to combine text, formulas and files.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:sequence>
+                <xs:element name="content" type="dcc:stringWithLangType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="contentOnce" type="dcc:stringWithLangType" minOccurs="0"/>
+                <xs:element name="file" type="dcc:byteDataType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="formula" type="dcc:formulaType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="formulaOnce" type="dcc:formulaType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="byteDataType">
+        <xs:annotation>
+            <xs:documentation>
+                Data block used for adding binary-encoded files.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="dcc:textType" minOccurs="0"/>
+            <xs:element name="description" type="dcc:richContentType" minOccurs="0"/>
+            <xs:element name="fileName" type="dcc:notEmptyStringType"/>
+            <xs:element name="mimeType" type="dcc:notEmptyStringType"/>
+            <xs:element name="dataBase64" type="xs:base64Binary"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="formulaType">
+        <xs:annotation>
+            <xs:documentation>
+                Data block used for adding formula and equation content.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="latex" type="xs:string"/>
+            <xs:element name="mathml" type="dcc:xmlType"/>
+        </xs:choice>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="xmlType">
+        <xs:annotation>
+            <xs:documentation>
+                Data block used for adding user- and application-specific XML content.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:any namespace="##other" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="optional"/>
+        <xs:attribute name="refId" type="xs:IDREFS" use="optional"/>
+        <xs:attribute name="refType" type="dcc:refTypesType" use="optional"/>
+    </xs:complexType>
+
+    <xs:simpleType name="refTypesType">
+        <xs:annotation>
+            <xs:documentation>
+                List of one or more refTypes as attributes for an XML element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list itemType="xs:string"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
